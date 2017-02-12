@@ -3,6 +3,7 @@ extend                = require 'extend'
 path                  = require 'path'
 MdsMenu               = require './mds_menu'
 MdsFileHistory        = require './mds_file_history'
+themes                = require '../themes'
 
 module.exports = class MdsMainMenu
   states: {}
@@ -251,22 +252,13 @@ module.exports = class MdsMainMenu
             }
           ]
 
-          themes: [
-            {
-              label: '&Default'
-              enabled: @window?
-              type: if @window? then 'radio' else 'normal'
-              checked: !@states?.theme || @states.theme == 'default'
-              click: => @window.mdsWindow.send 'setTheme', 'default' unless @window.mdsWindow.freeze
-            }
-            {
-              label: '&Gaia'
-              enabled: @window?
-              type: if @window? then 'radio' else 'normal'
-              checked: @states.theme == 'gaia'
-              click: => @window.mdsWindow.send 'setTheme', 'gaia' unless @window.mdsWindow.freeze
-            }
-          ]
+          themes: themes.map((theme) => ({
+            label: theme.label
+            enabled: @window?
+            type: if @window? then 'radio' else 'normal'
+            checked: @states && @states.theme && @states.theme == theme.id
+            click: => @window.mdsWindow.send 'setTheme', theme.id unless @window.mdsWindow.freeze
+          }))
 
           encodings: do =>
             injectAll = (items) =>

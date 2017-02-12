@@ -1,5 +1,6 @@
 extend  = require 'extend'
 path    = require 'path'
+themes  = require '../themes'
 
 module.exports = class MdsMdSetting
   @generalTransfomer:
@@ -29,7 +30,7 @@ module.exports = class MdsMdSetting
     height: MdsMdSetting.generalTransfomer.unit
     theme: (v) ->
       basename = path.basename(v)
-      return if basename in ['default', 'gaia'] then "css/themes/#{basename}.css" else null
+      return if basename in themes.map((theme) -> theme.id) then "css/themes/#{basename}.css" else v
     template: (v) -> v
     footer: (v) -> v
     prerender: MdsMdSetting.generalTransfomer.bool
