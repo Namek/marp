@@ -7,4 +7,8 @@ module.exports = [
     id: 'gaia',
     label: '&Gaia'
   }
+  {
+    id: 'evening',
+    label: "&Evening"
+  }
 ]
