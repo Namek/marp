@@ -38,17 +38,24 @@ class EditorStates
       { label: '&Paste', accelerator: 'CmdOrCtrl+V', role: 'paste' }
       { label: '&Delete', role: 'delete' }
       { label: 'Select &All', accelerator: 'CmdOrCtrl+A', click: (i, w) => @codeMirror.execCommand 'selectAll' if w and !w.mdsWindow.freeze }
-      { type: 'separator', platform: 'darwin' }
+      { type: 'separator' }
+      { label: 'Pre&vious Slide', accelerator: 'Shift+CmdOrCtrl+[', click: (i, w) => @navigateSlide(i, w, false) }
+      { label: '&Next Slide', accelerator: 'Shift+CmdOrCtrl+]', click: (i, w) => @navigateSlide(i, w, true) }
       { label: 'Services', role: 'services', submenu: [], platform: 'darwin' }
     ]
 
-  refreshPage: (rulers) =>
+  getCurrentPage: (rulers) =>
     @rulers = rulers if rulers?
     page    = 1
 
     lineNumber = @codeMirror.getCursor().line || 0
     for rulerLine in @rulers
       page++ if rulerLine <= lineNumber
+    
+    page 
+
+  refreshPage: (rulers) =>
+    page = @getCurrentPage rulers
 
     if @currentPage != page
       @currentPage = page
@@ -133,6 +140,17 @@ class EditorStates
         CodeMirror.Pos(@codeMirror.firstLine(), 0)
       )
 
+  navigateSlide: (i, w, forward) =>
+    page = @getCurrentPage()
+    return if page == 1 and not forward # can't go "previous from page 1"
+
+    idx = if forward then page - 1 else page - 3
+    idx = if idx >= @rulers.length then @rulers.length - 1 else idx # prevent overflow
+    editorLine = if idx >= 0 then @rulers[idx] else 0  # prevent underflow
+    @codeMirror.setCursor
+      line: editorLine + 1
+      ch: 0
+
 loadingState = 'loading'
 
 do ->
@@ -172,7 +190,12 @@ do ->
   draggingSplitPosition = undefined
 
   setSplitter = (splitPoint) ->
-    splitPoint = Math.min(0.8, Math.max(0.2, parseFloat(splitPoint)))
+    min_allowed = 0.2
+
+    if splitPoint < 0.01
+      min_allowed = 0.0 
+      
+    splitPoint = Math.min(0.8, Math.max(min_allowed, parseFloat(splitPoint)))
 
     $('.pane.markdown').css('flex-grow', splitPoint * 100)
     $('.pane.preview').css('flex-grow', (1 - splitPoint) * 100)
@@ -254,13 +277,13 @@ do ->
           editorStates.preview.send 'setClass', 'slide-view screen'
         when 'list'
           editorStates.preview.send 'setClass', 'slide-view list'
-
+      
       $('#preview-modes').removeClass('disabled')
       $('.viewmode-btn[data-viewmode]').removeClass('active')
         .filter("[data-viewmode='#{mode}']").addClass('active')
 
     .on 'editCommand', (command) -> editorStates.codeMirror.execCommand(command)
-
+    .on 'jumpSlide', (forwards) -> editorStates.navigateSlide {}, {}, forwards
     .on 'openDevTool', ->
       if editorStates.preview.isDevToolsOpened()
         editorStates.preview.closeDevTools()

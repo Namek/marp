@@ -153,6 +153,19 @@ module.exports = class MdsMainMenu
               enabled: @window?
               submenu: [{ replacement: 'themes' }]
             }
+             { type: 'separator' }
+            {
+              label: 'Pre&vious Slide'
+              enabled: @window?
+              accelerator: 'CmdOrCtrl+PageUp'
+              click: (i, w) => @window.mdsWindow.send 'jumpSlide', false unless @window.mdsWindow.freeze
+            }
+            {
+              label: '&Next Slide'
+              enabled: @window?
+              accelerator: 'CmdOrCtrl+PageDown'
+              click: (i, w) => @window.mdsWindow.send 'jumpSlide', true unless @window.mdsWindow.freeze
+            }
             { type: 'separator' }
             {
               label: 'Toggle &Full Screen'
