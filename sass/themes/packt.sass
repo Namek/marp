@@ -1,0 +1,291 @@
+/*
+ * Evening - Marp slide theme.
+ * Based on Gaia Copyright (C) 2016 Yuki Hattori.
+ *
+ * Gaia was inspired by AZUSA Keynote templates (by @sanographix).
+ * https://github.com/sanographix/azusa-keynote
+ */
+
+@import './markdown'
+@import '../../node_modules/highlight.js/styles/darcula'
+@import url(https://fonts.googleapis.com/css?family=Open+Sans)
+@import url(https://fonts.googleapis.com/css?family=Didact+Gothic)
+@import url(https://fonts.googleapis.com/css?family=Fira+Mono:400,500,700)
+
+@function hsl($h, $s, $l)
+  @return unquote('hsl(#{$h}, #{$s}, #{$l})')
+
+@function hsla($h, $s, $l, $a)
+  @return unquote('hsla(#{$h}, #{$s}, #{$l}, #{$a})')
+
++body-slide-mode
+  --slide-bg-color: hsl(0, 3%, 14%);
+  --slide-text-color: hsl(0, 0%, 90%);
+  --slide-text-strong-color: white;
+  --slide-text-em-color: white;
+  --slide-text-heading-color: white;
+  --slide-text-title-color: hsl(0, 1%, 14%);
+  --slide-bg-title-color: hsl(23, 77%, 51%);
+
+  --code-bg-color: var(--slide-bg-color);
+  --code-text-color: hsl(0, 0%, 90%);
+
+  --link-color: hsl(203, 77%, 51%);
+  --quote-color: var(--slide-text-color);
+  --big-quote-color: var(--slide-text-heading-color);
+
+  --thead-bg-color: hsl(23, 77%, 51%);
+  --thead-text-color:  hsl(0, 1%, 14%);
+  --table-border-color: hsl(23, 77%, 75%);
+  --table-odd-bg-color: rgba(255, 255, 255, 0.03125);
+
+  --text-font-family: 'Open Sans', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+  --title-font-family: 'Didact Gothic', 'Open Sans', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+  --heading-font-family: 'Open Sans', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+  --quote-font-family: var(--text-font-family);
+  --big-quote-font-family: var(--heading-font-family);
+  --code-font-family: 'Fira Mono', 'Roboto Mono', 'Menlo', 'Courier New', Courier, monospace;
+
+  .markdown-body
+    font-size: calc(0.045px * var(--slide-height))
+    font-family: var(--text-font-family)
+    line-height: 1.3
+    letter-spacing: 1.25px
+    word-wrap: break-word
+
+  .slide_footer
+    opacity: .6
+    line-height: calc(0.045px * var(--slide-height))
+    font-size: calc(0.025px * var(--slide-height))
+
+  .slide_wrapper
+    color: var(--slide-text-color)
+    background-color: var(--slide-bg-color)
+
+    > .slide
+      padding: calc(0.1px * var(--slide-height)) calc(0.08px * var(--slide-width))
+
+    &.only-headings, &.only-blockquotes
+      > .slide
+        justify-content: space-around
+      blockquote
+        font-family: var(--big-quote-font-family)
+        font-size: 1.8em
+        text-align: center
+        color: var(--big-quote-color)
+
+    strong
+      color: var(--slide-text-strong-color)
+
+    em
+      color: var(--slide-text-em-color)
+
+
+    h1, h2, h3, h4, h5, h6
+      margin: 0 0 .5em 0
+      color: var(--slide-text-heading-color)
+      font-family: var(--heading-font-family)
+
+    h1
+      font-size: 1.4em
+    h2
+      font-size: 1.2em
+    h3
+      font-size: 1.1em
+    h4
+      font-size: 1.0em
+    h5
+      font-size: 0.9em
+    h6
+      font-size: 0.8em
+
+    h1
+      text-align: center
+      font-weight: normal
+      line-height: 1.5
+      margin-left: -7rem
+      margin-right: -7rem
+      color: var(--slide-text-title-color)
+      background-color: var(--slide-bg-title-color)
+      font-weight: normal
+
+    h2, h3, h4
+      font-weight: bold
+
+    h5, h6
+      font-weight: normal
+
+    &.only-headings
+      h1, h2, h3, h4, h5, h6
+        text-align: center
+      h1
+        color: var(--slide-text-title-color)
+        background-color: var(--slide-bg-title-color)
+        border: none;
+        font-weight: normal
+        font-size: 1.4em
+
+    // Styling
+    mark
+      background: transparent
+
+    code
+      font-family: var(--code-font-family)
+      display: inline-block
+      padding: 0.1em 0.2em
+      margin: -0.1em 0.05em
+      letter-spacing: 0
+      font-size: 1em
+      vertical-align: baseline
+
+    pre
+      overflow: auto
+      line-height: 1.5
+
+      code
+        display: block
+        margin: 0
+        padding: 0.5em 0.75em
+        font-size: 0.9em
+
+    ul, ol
+      > li
+        margin: 0.6em 0
+        > p
+          margin: 0
+
+    ol
+      list-style-type: decimal
+
+    blockquote
+      position: relative
+      margin: calc(0.04px * var(--slide-height))
+      font-family: var(--quote-font-family)
+      font-style: italic
+
+    table
+      border-spacing: 0
+      border-collapse: collapse
+      width: 100%
+
+      th, td
+        padding: 0.2em 0.4em
+        border-width: 1px
+        border-style: solid
+
+
+    > .slide
+      background-color: var(--slide-bg-color)
+
+    mark
+      background-color: var(--slide-text-color)
+      color: var(--slide-bg-color)
+
+    a
+      color: var(--link-color)
+
+    code
+      background-color: var(--code-bg-color)
+      color: var(--code-text-color)
+
+    pre
+      color: var(--code-text-color)
+
+    blockquote
+      &::after, &::before
+        color: var(--quote-color)
+
+    table
+      th, td
+        border-color: var(--table-border-color)
+
+      thead
+        th
+          background: var(--thead-bg-color)
+          color: var(--thead-text-color)
+
+      tbody
+        tr:nth-child(odd)
+          td, th
+            background: var(--table-odd-bg-color)
+
+    &[data-template~="title"]
+      > .slide
+        justify-content: space-around
+
+        h1, h2, h5, h6
+          text-align: left
+          font-weight: normal
+          font-size: 2rem
+          width: 75%
+
+        h5, h6
+          position: absolute
+          color: hsl(0, 0%, 75%)
+
+        h6
+          top: -15rem
+          border-bottom: 1px solid white
+          letter-spacing: 3px
+          line-height: 2
+
+        h5
+          top: -10rem
+          text-align: right
+          font-style: italic
+          font-weight: 200
+
+        h1, h2
+          text-align: right
+          width: 85%
+          border: none
+
+        h2
+          font-size: 1.25em
+          font-weight: bold
+
+        h1
+          font-family: var(--title-font-family)
+          font-size: 2.25em
+          font-style: italic
+          color: var(--slide-bg-title-color)
+          background-color: var(--slide-bg-color)
+          margin: 0
+          line-height: 1
+
+          &:after
+            content: "▶︎";
+            font-style: normal
+            font-size: 200%
+            position: absolute
+            margin: 0
+            line-height: 0.6
+            margin-left: 0.25em
+            color: hsl(90, 51%, 45%)
+
+    &[data-template~="section"]
+      h1
+        position: absolute
+        top: -17.25rem
+        left: -7rem
+        right: -7rem
+        font-size: 1.4em
+
+      h1, h2, h3, h4, h5, h6
+        font-family: var(--text-font-family)
+
+      h2
+        font-size: 3rem
+        font-weight: normal
+
+    &[data-template~="invert"]
+      --slide-text-color: var(--slide-bg-color);
+      --slide-bg-color: var(--slite-text-color);
+      --slide-text-title-color: black;
+      --slide-text-strong-color: black;
+      --slide-text-em-color: black;
+      --link-color: hsl(200, 75%, 50%);
+
+@media print
+  body
+    background-color: hsl(0, 3%, 14%);

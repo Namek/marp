@@ -11,4 +11,8 @@ module.exports = [
     id: 'evening',
     label: "&Evening"
   }
+  {
+    id: 'packt',
+    label: '&Packt'
+  }
 ]
