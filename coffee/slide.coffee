@@ -118,3 +118,6 @@ document.addEventListener 'DOMContentLoaded', ->
 
     $(window).resize (e) -> applyScreenSize()
     applyScreenSize()
+
+    window.addEventListener 'wheel', (e) ->
+      ipc.sendToHost 'jumpSlide', (e.deltaY > 0)
