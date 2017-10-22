@@ -9,6 +9,7 @@ fs             = require 'fs'
 jschardet      = require 'jschardet'
 iconv_lite     = require 'iconv-lite'
 Path           = require 'path'
+electronClient = require('electron-connect').client
 
 module.exports = class MdsWindow
   @appWillQuit: false
@@ -58,6 +59,13 @@ module.exports = class MdsWindow
         window: bw
         development: global.marp.development
         viewMode: @viewMode
+
+      electronClient.create(bw)
+
+      if global.marp.development
+        bw.setAlwaysOnTop(true)
+        bw.focus()
+        bw.setAlwaysOnTop(false)
 
       bw.maximize() if global.marp.config.get 'windowPosition.maximized'
 

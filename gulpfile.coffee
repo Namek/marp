@@ -8,6 +8,7 @@ runSequence = require('run-sequence')
 Path        = require('path')
 extend      = require('extend')
 mkdirp      = require('mkdirp')
+electron    = require('electron-connect').server.create({ stopOnClose: true })
 
 packageOpts =
   asar: true
@@ -208,3 +209,14 @@ gulp.task 'archive:linux', (done) ->
   , done
 
 gulp.task 'release', (done) -> runSequence 'build', 'archive', 'clean', done
+
+gulp.task 'dev', ['compile'], () ->
+  electron.start "--development", (state) ->
+    process.exit(0) if state == 'stopped'
+
+  gulp.watch [
+    'coffee/**/*.coffee',
+    'sass/**/*.scss',
+    'sass/**/*.sass'
+  ]
+  , ['compile', electron.restart]

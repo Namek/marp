@@ -8,7 +8,7 @@
   },
   "main": "main.js",
   "scripts": {
-    "start": "gulp compile && electron . --development",
+    "start": "gulp dev",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -39,6 +39,7 @@
   },
   "dependencies": {
     "codemirror": "^5.11.0",
+    "electron-connect": "^0.6.2",
     "extend": "^3.0.0",
     "github-markdown-css": "^2.4.1",
     "highlight.js": "^9.1.0",
