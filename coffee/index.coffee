@@ -184,6 +184,8 @@ class EditorStates
     idx = if forward then page - 1 else page - 3
     idx = if idx >= @rulers.length then @rulers.length - 1 else idx # prevent overflow
     editorLine = if idx >= 0 then @rulers[idx] else 0  # prevent underflow
+
+    @codeMirror.focus()
     @codeMirror.setCursor
       line: editorLine + 1
       ch: 0
