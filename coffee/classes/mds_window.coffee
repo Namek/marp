@@ -40,6 +40,7 @@ module.exports = class MdsWindow
     @browserWindow = do =>
       bw = new BrowserWindow extend(true, {}, MdsWindow.defOptions(), @options)
       @_window_id = bw.id
+      bw.setAutoHideMenuBar(true)
 
       loadCmp = (details) =>
         setTimeout =>
