@@ -40,7 +40,6 @@ module.exports = class MdsWindow
     @browserWindow = do =>
       bw = new BrowserWindow extend(true, {}, MdsWindow.defOptions(), @options)
       @_window_id = bw.id
-      bw.setAutoHideMenuBar(true)
 
       loadCmp = (details) =>
         setTimeout =>
@@ -226,6 +225,7 @@ module.exports = class MdsWindow
       global.marp.config.save()
 
       @send 'viewMode', mode
+      @browserWindow.setAutoHideMenuBar(mode == 'presentation')
 
       @menu.states.viewMode = mode
       @menu.updateMenu()
