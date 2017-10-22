@@ -11,6 +11,9 @@ require 'codemirror/mode/xml/xml'
 require 'codemirror/mode/markdown/markdown'
 require 'codemirror/mode/gfm/gfm'
 require 'codemirror/addon/edit/continuelist'
+require 'codemirror/addon/search/jump-to-line'
+require 'codemirror/addon/search/search'
+require 'codemirror/addon/search/searchcursor'
 
 class EditorStates
   rulers: []
@@ -197,6 +200,7 @@ do ->
       dragDrop: false
       extraKeys:
         Enter: 'newlineAndIndentContinueMarkdownList'
+        'Ctrl-F': 'findPersistent'
     ),
     $('#preview')[0]
   )

@@ -141,6 +141,21 @@ module.exports = class MdsMainMenu
           ]
         }
         {
+          label: '&Search'
+          submenu: [
+            {
+              label: '&Find'
+              accelerator: 'CmdOrCtrl+F'
+              click: => @window.mdsWindow.send 'editCommand', 'find'
+            },
+            {
+              label: 'Find and &Replace'
+              accelerator: 'CmdOrCtrl+Shift+F'
+              click: => @window.mdsWindow.send 'editCommand', 'replace'
+            }
+          ]
+        }
+        {
           label: '&View'
           submenu: [
             {
