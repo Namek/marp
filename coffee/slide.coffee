@@ -70,6 +70,7 @@ document.addEventListener 'DOMContentLoaded', ->
 
     applyCurrentPage = (page) ->
       @currentPage = page
+      percentage = Math.min(100, Math.max(0, (page-1) / (@pageCount-1) * 100))
       setStyle 'currentPage',
         """
         @media not print {
@@ -78,6 +79,9 @@ document.addEventListener 'DOMContentLoaded', ->
             height: 0 !important;
             border: none !important;
             box-shadow: none !important;
+          }
+          body.slide-view.screen .slide_wrapper .slide_progress_bar {
+            width: #{percentage}%;
           }
         }
         """

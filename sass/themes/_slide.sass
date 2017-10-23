@@ -117,6 +117,9 @@ img.emoji
       z-index: 10
       pointer-events: none
 
+    .slide_progress_bar
+      display: none
+
     .slide_bg
       position: absolute
       left: 0
@@ -187,3 +190,16 @@ img.emoji
 
       &:first-child
         margin-top: 0 !important
+
+  &.presentation, &.screen
+    .slide_progress_bar
+      display: block
+      position: absolute
+      left: 0
+      bottom: 0
+      width: 0px
+      height: 7px
+      background: black
+      z-index: 110
+      transition: width 0.2s ease-out
+      -webkit-filter: blur(0)
