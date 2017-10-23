@@ -36,6 +36,7 @@ module.exports = class MdsMarkdown
         shortcuts: {}
       'markdown-it-katex': {}
       'markdown-it-classy': {}
+      'markdown-it-container': "fragment"
 
     twemoji:
       base: Path.resolve(__dirname, '../../node_modules/twemoji/2') + Path.sep
@@ -134,7 +135,11 @@ module.exports = class MdsMarkdown
   parse: (markdown) =>
     # A lil' hacky way to provide "fragments" with `/` operator in the beginning of line.
     # Element on this line will have "fragment" styling class.
-    markdown = markdown.replace(/^\/(.+$)/mg, "$1 {fragment}")
+    markdown = markdown.replace(/^\/[^-](.+$)/mg, "$1 {fragment}")
+
+    # Now let's provide the fragment blocks with `/-` and `-/`.
+    markdown = markdown.replace(/^\/-/mg, "::: fragment\n")
+      .replace(/-\//mg, "\n:::")
 
     @_rulers          = []
     @_settings        = new MdsMdSetting
