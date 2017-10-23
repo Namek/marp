@@ -88,6 +88,9 @@ class EditorStates
 
               @previewInitialized = true
               $('body').addClass 'initialized-slide'
+          when 'stepPresentation_reply'
+            @currentPage = e.args[0]
+            $('#page-indicator').text "Page #{@currentPage} / #{@rulers.length + 1}"
           else
             MdsRenderer._call_event e.channel, e.args...
 
@@ -116,14 +119,10 @@ class EditorStates
 
     @codeMirror.on 'cursorActivity', (cm) => window.setTimeout (=> @refreshPage()), 5
 
-  changePage: (delta) =>
-    page = @currentPage + delta
-    if @rulers and page > 0 and page <= (@rulers.length + 1)
-      @currentPage = page
-
-      @preview.send 'currentPage', @currentPage if @previewInitialized
-
-      $('#page-indicator').text "Page #{@currentPage} / #{@rulers.length + 1}"
+  stepPresentation: (delta) =>
+    return if not @previewInitialized
+    #TODO check if it's presentation/screen mode
+    @preview.send('stepPresentation', ({ currentPage: @currentPage, delta: delta }))
 
   hideEditor: =>
     $('.pane.markdown').hide()
@@ -137,11 +136,13 @@ class EditorStates
 
       # left and up - back
       if e.keyCode is 37 or e.keyCode is 38
-        @changePage -1
+        @stepPresentation -1
+        # @preview.send 'stepPresentation', -1
 
-      # right and down - forward
-      if e.keyCode is 39 or e.keyCode is 40
-        @changePage 1
+      # right, down and space - forward
+      if e.keyCode is 39 or e.keyCode is 40 or e.keyCode is 32
+        @stepPresentation 1
+        # @preview.sendSync 'stepPresentation', 1
 
   showEditor: =>
     $('.pane.markdown').show()
@@ -318,8 +319,10 @@ do ->
       switch mode
         when 'markdown'
           editorStates.preview.send 'setClass', ''
-        when 'screen', 'presentation'
+        when 'screen'
           editorStates.preview.send 'setClass', 'slide-view screen'
+        when 'presentation'
+          editorStates.preview.send 'setClass', 'slide-view screen presentation'
         when 'list'
           editorStates.preview.send 'setClass', 'slide-view list'
       

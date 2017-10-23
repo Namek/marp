@@ -233,7 +233,11 @@ module.exports = class MdsWindow
       global.marp.config.save()
 
       @send 'viewMode', mode
-      @browserWindow.setAutoHideMenuBar(mode == 'presentation')
+
+      isPresentation = mode is 'presentation'
+      @browserWindow.setAutoHideMenuBar(isPresentation)
+      if not isPresentation
+        @browserWindow.setMenuBarVisibility true
 
       @menu.states.viewMode = mode
       @menu.updateMenu()

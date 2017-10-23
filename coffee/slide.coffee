@@ -69,6 +69,7 @@ document.addEventListener 'DOMContentLoaded', ->
       $('#container').toggleClass 'height-base', size.ratio > getSlideSize().ratio
 
     applyCurrentPage = (page) ->
+      @currentPage = page
       setStyle 'currentPage',
         """
         @media not print {
@@ -81,9 +82,33 @@ document.addEventListener 'DOMContentLoaded', ->
         }
         """
 
+    applyStepPresentation = (currentPage, delta) ->
+      newPage = currentPage
+      allFragments = $("[id=\"#{currentPage}\"] .fragment").toArray().reverse()
+      exposedFragments = allFragments.filter (el) -> el.classList.contains('fragment-exposed')
+      leftFragmentsCount = allFragments.length - exposedFragments.length - delta
+      isPresentationMode = $('body.slide-view.presentation').get().length > 0
+      shouldSwitchPage = not isPresentationMode or leftFragmentsCount < 0 or leftFragmentsCount > allFragments.length
+
+      if shouldSwitchPage
+        for el in allFragments
+          (el.classList[if delta > 0 then 'add' else 'remove']) 'fragment-exposed'
+
+        page = currentPage + delta
+        if page > 0 and page <= @pageCount
+          newPage = page
+          applyCurrentPage(newPage)
+      else
+        el.classList.remove 'fragment-exposed' for el in allFragments
+        el.classList.add 'fragment-exposed' for el in allFragments[leftFragmentsCount..]
+
+      if newPage != currentPage
+        ipc.sendToHost 'stepPresentation_reply', newPage
+
     render = (md) ->
       applySlideSize md.settings.getGlobal('width'), md.settings.getGlobal('height')
       md.changedTheme = themes.apply md.settings.getGlobal('theme')
+      @pageCount = md.pageCount = md.rulers.length + 1
 
       $('#markdown').html(md.parsed)
 
@@ -106,6 +131,7 @@ document.addEventListener 'DOMContentLoaded', ->
 
     ipc.on 'render', (e, md) -> render(Markdown.parse(md))
     ipc.on 'currentPage', (e, page) -> applyCurrentPage page
+    ipc.on 'stepPresentation', (e, {currentPage, delta}) -> applyStepPresentation currentPage, delta
     ipc.on 'setClass', (e, classes) -> $('body').attr 'class', classes
     ipc.on 'setImageDirectory', (e, dir) -> setImageDirectory(dir)
     ipc.on 'requestPdfOptions', (e, opts) -> sendPdfOptions(opts || {})
@@ -120,4 +146,5 @@ document.addEventListener 'DOMContentLoaded', ->
     applyScreenSize()
 
     window.addEventListener 'wheel', (e) ->
-      ipc.sendToHost 'jumpSlide', (e.deltaY > 0)
+      # TODO update cursor position in markdown textarea and focus on it
+      applyStepPresentation(@currentPage, (if e.deltaY > 0 then 1 else -1))

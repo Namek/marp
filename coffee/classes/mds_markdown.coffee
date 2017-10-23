@@ -33,6 +33,7 @@ module.exports = class MdsMarkdown
       'markdown-it-emoji':
         shortcuts: {}
       'markdown-it-katex': {}
+      'markdown-it-classy': {}
 
     twemoji:
       base: Path.resolve(__dirname, '../../node_modules/twemoji/2') + Path.sep
@@ -129,6 +130,10 @@ module.exports = class MdsMarkdown
         defaultRenderers.html_block.apply(@, args)
 
   parse: (markdown) =>
+    # A lil' hacky way to provide "fragments" with `/` operator in the beginning of line.
+    # Element on this line will have "fragment" styling class.
+    markdown = markdown.replace(/^\/(.+$)/mg, "$1 {fragment}")
+
     @_rulers          = []
     @_settings        = new MdsMdSetting
     @settingsPosition = []
