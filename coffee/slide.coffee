@@ -86,12 +86,19 @@ document.addEventListener 'DOMContentLoaded', ->
         }
         """
 
-    applyStepPresentation = (currentPage, delta) ->
+    applyStepFragmentInSlide = (currentPage, delta) ->
       newPage = currentPage
       allFragments = $("[id=\"#{currentPage}\"] .fragment").toArray().reverse()
       exposedFragments = allFragments.filter (el) -> el.classList.contains('fragment-exposed')
       leftFragmentsCount = allFragments.length - exposedFragments.length - delta
+
+      # that's ugly, iknw
+      isScreenMode = $('body.slide-view.screen').get().length > 0
       isPresentationMode = $('body.slide-view.presentation').get().length > 0
+
+      if not isScreenMode and not isPresentationMode
+        return
+
       shouldSwitchPage = not isPresentationMode or leftFragmentsCount < 0 or leftFragmentsCount > allFragments.length
 
       if shouldSwitchPage
@@ -101,13 +108,14 @@ document.addEventListener 'DOMContentLoaded', ->
         page = currentPage + delta
         if page > 0 and page <= @pageCount
           newPage = page
-          applyCurrentPage(newPage)
       else
         el.classList.remove 'fragment-exposed' for el in allFragments
         el.classList.add 'fragment-exposed' for el in allFragments[leftFragmentsCount..]
 
       if newPage != currentPage
-        ipc.sendToHost 'stepPresentation_reply', newPage
+        console.log(newPage)
+        applyCurrentPage newPage
+        ipc.sendToHost 'stepFragmentInSlide_reply', newPage
 
     render = (md) ->
       applySlideSize md.settings.getGlobal('width'), md.settings.getGlobal('height')
@@ -150,5 +158,6 @@ document.addEventListener 'DOMContentLoaded', ->
     applyScreenSize()
 
     window.addEventListener 'wheel', (e) ->
-      # TODO update cursor position in markdown textarea and focus on it
-      applyStepPresentation(@currentPage, (if e.deltaY > 0 then 1 else -1))
+      console.log('wheel')
+      if e.deltaY != 0
+        applyStepFragmentInSlide(@currentPage, (if e.deltaY > 0 then 1 else -1))

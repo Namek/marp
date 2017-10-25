@@ -60,12 +60,16 @@ module.exports = class MdsWindow
         development: global.marp.development
         viewMode: @viewMode
 
-      electronClient.create(bw)
-
       if global.marp.development
+        electronClient.create(bw)
+
         bw.setAlwaysOnTop(true)
         bw.focus()
         bw.setAlwaysOnTop(false)
+
+        # debug only
+        setTimeout (() => MdsWindow.loadFromFile "D:/Dropbox/Talks/Elm Talk/elm-talk.md", bw.mdsWindow), 500
+        setTimeout (-> bw.mdsWindow.send 'openDevTool'), 500
 
       bw.maximize() if global.marp.config.get 'windowPosition.maximized'
 

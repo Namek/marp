@@ -49,6 +49,7 @@
     "markdown-it": "^6.0.1",
     "markdown-it-classy": "^0.2.0",
     "markdown-it-container": "^2.0.0",
+    "markdown-it-decorate": "^1.2.2",
     "markdown-it-emoji": "^1.1.0",
     "markdown-it-katex": "^2.0.1",
     "markdown-it-mark": "^2.0.0",

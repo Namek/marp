@@ -14,6 +14,7 @@ require 'codemirror/addon/edit/continuelist'
 require 'codemirror/addon/search/jump-to-line'
 require 'codemirror/addon/search/search'
 require 'codemirror/addon/search/searchcursor'
+require 'codemirror/addon/selection/active-line'
 
 class EditorStates
   rulers: []
@@ -88,9 +89,30 @@ class EditorStates
 
               @previewInitialized = true
               $('body').addClass 'initialized-slide'
-          when 'stepPresentation_reply'
+          when 'stepFragmentInSlide_reply'
             @currentPage = e.args[0]
             $('#page-indicator').text "Page #{@currentPage} / #{@rulers.length + 1}"
+
+            # TODO would be nice to find first non-empty line in that page
+            editorLine = if @currentPage <= 1 then 1 else @rulers[@currentPage-2] + 1
+            nextPageFirstLine = if @currentPage <= 1 then 2 else @rulers[@currentPage-1] + 1
+
+            console.log(@codeMirror.getLine(editorLine))            
+
+            while editorLine < nextPageFirstLine and (lineText = @codeMirror.getLine(editorLine)) != undefined and lineText.trim().length == 0
+              console.log('inc')
+              editorLine += 1
+
+            console.log(editorLine)
+
+            # TODO don't focus when it's presentation mode
+            coords = { line: editorLine, ch: 0 }
+            @codeMirror.setCursor coords
+            t = @codeMirror.charCoords(coords, "local").top
+            middleHeight = @codeMirror.getScrollerElement().offsetHeight * 0.35
+            @codeMirror.scrollTo(null, t - middleHeight)
+
+            @codeMirror.focus()
           else
             MdsRenderer._call_event e.channel, e.args...
 
@@ -119,10 +141,10 @@ class EditorStates
 
     @codeMirror.on 'cursorActivity', (cm) => window.setTimeout (=> @refreshPage()), 5
 
-  stepPresentation: (delta) =>
+  stepFragmentInSlide: (delta) =>
     return if not @previewInitialized
     #TODO check if it's presentation/screen mode
-    @preview.send('stepPresentation', ({ currentPage: @currentPage, delta: delta }))
+    @preview.send('stepFragmentInSlide', ({ currentPage: @currentPage, delta: delta }))
 
   hideEditor: =>
     $('.pane.markdown').hide()
@@ -130,19 +152,20 @@ class EditorStates
     $('.toolbar.toolbar-footer').hide()
 
     $('body').on 'keyup.presentation-mode', (e) =>
+      # scape
       if e.keyCode is 27
         MdsRenderer.sendToMain 'viewMode', 'screen'
+        setTimeout (() -> @codeMirror.focus()), 500
+        console.log('asd')
         return
 
       # left and up - back
       if e.keyCode is 37 or e.keyCode is 38
-        @stepPresentation -1
-        # @preview.send 'stepPresentation', -1
+        @stepFragmentInSlide -1
 
       # right, down and space - forward
       if e.keyCode is 39 or e.keyCode is 40 or e.keyCode is 32
-        @stepPresentation 1
-        # @preview.sendSync 'stepPresentation', 1
+        @stepFragmentInSlide 1
 
   showEditor: =>
     $('.pane.markdown').show()
@@ -190,6 +213,16 @@ class EditorStates
     @codeMirror.setCursor
       line: editorLine + 1
       ch: 0
+  
+  jumpToPage: (newPage) =>
+    # console.log('jumpToPage', newPage-1)
+    # console.log(@rulers)
+    # editorLine = @rulers[newPage-1]
+
+    # #@codeMirror.focus()
+    # @codeMirror.setCursor
+    #   line: editorLine + 1
+    #   ch: 0
 
 loadingState = 'loading'
 
@@ -200,6 +233,7 @@ do ->
       theme: 'marp'
       lineWrapping: true
       lineNumbers: false
+      styleActiveLine: true
       dragDrop: false
       extraKeys:
         Enter: 'newlineAndIndentContinueMarkdownList'

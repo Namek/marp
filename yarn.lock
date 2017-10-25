@@ -2102,6 +2102,10 @@ markdown-it-container@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/markdown-it-container/-/markdown-it-container-2.0.0.tgz#0019b43fd02eefece2f1960a2895fba81a404695"
 
+markdown-it-decorate@^1.2.2:
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/markdown-it-decorate/-/markdown-it-decorate-1.2.2.tgz#f1e11d11d837ae78906198f8a2c974f0e646acb7"
+
 markdown-it-emoji@^1.1.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/markdown-it-emoji/-/markdown-it-emoji-1.4.0.tgz#9bee0e9a990a963ba96df6980c4fddb05dfb4dcc"

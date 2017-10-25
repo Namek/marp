@@ -6,6 +6,114 @@ Path         = require 'path'
 MdsMdSetting = require './mds_md_setting'
 {exist}      = require './mds_file'
 
+wasCalled = false
+
+setupCustomPlugin = (md) =>
+  marker_str_beg = '/-'
+  marker_str_end = '-/'
+
+  marker_regex = /\/-[^-]-\//mg
+
+  render = (tokens, idx, _options, env, self) ->
+    # {content} = tokens[idx]
+    # return if content.substring(0, 2) != '/-'
+
+    # if matched = marker_regex.exec(content)
+    #   console.log(matched)
+    #   debugger
+      
+
+
+    # add a class to the opening tag
+    if tokens[idx].nesting == 1
+      tokens[idx].attrPush([ 'class', name ])
+
+    self.renderToken(tokens, idx, _options, env, self)
+  
+
+  container = (state, startLine, endLine, silent) ->
+    return false
+    start = state.bMarks[startLine] + state.tShift[startLine]
+    max = state.eMarks[startLine]
+    line = state.src.substring(start, max)
+
+    i = start
+
+    found = false
+
+    isOneLiner = false
+    if state.src[start] == '/' and state.src[start+1] != '-'
+      isOneLiner = true
+      end = max
+      maxLine = startLine
+      found = true
+    else
+      # search for opening tag '/-'
+      while i < max
+        if state.src[i] == '/' and state.src[i+1] == '-'
+          found = true
+          break
+        i += 1
+
+      if not found
+        return false
+
+      start = i+2
+
+      # search for closing tag '-/'
+      while i < state.src.length-1
+        if state.src[i] == '-' and state.src[i+1] == '/'
+          i++
+          break
+        i++
+
+      c1 = state.src[i-1]
+      c2 = state.src[i]
+      found = state.src[i-1] == '-' and state.src[i] == '/'
+    
+
+    if not found
+      return false
+    else
+      end = i - 1
+      console.log(start, end)
+      text = state.src.substring(start, end)
+      console.log(text)
+
+    old_parent = state.parentType
+    old_line_max = state.lineMax
+    state.parentType = 'container'
+
+    # this will prevent lazy continuations from ever going past our end marker
+    state.lineMax = nextLine
+
+    token        = state.push('fragment_open', 'span', 1)
+    token.markup = markup
+    token.block  = true
+    token.info   = params
+    token.map    = [ startLine, nextLine ]
+
+    state.md.block.tokenize(state, startLine + 1, nextLine)
+
+    token        = state.push('fragment_close', 'span', -1)
+    token.markup = state.src.slice(start, pos)
+    token.block  = true
+
+    state.parentType = old_parent
+    state.lineMax = old_line_max
+    state.line = nextLine + (auto_closed ? 1 : 0)
+
+    true
+
+
+
+  md.block.ruler.before('fence', 'fragment', container, {
+    alt: [ 'paragraph', 'reference', 'blockquote', 'list' ]
+  })
+
+  md.renderer.rules.fragment_open = render
+  md.renderer.rules.fragment_close = render
+
 module.exports = class MdsMarkdown
   @slideTagOpen:  (page) -> '<div class="slide_wrapper" id="' + page + '"><div class="slide"><div class="slide_bg"></div><div class="slide_inner">'
   @slideTagClose: (page) -> '</div><footer class="slide_footer"></footer>' +
@@ -37,6 +145,7 @@ module.exports = class MdsMarkdown
       'markdown-it-katex': {}
       'markdown-it-classy': {}
       'markdown-it-container': "fragment"
+      # 'markdown-it-decorate': {}
 
     twemoji:
       base: Path.resolve(__dirname, '../../node_modules/twemoji/2') + Path.sep
@@ -46,6 +155,7 @@ module.exports = class MdsMarkdown
   @createMarkdownIt: (opts, plugins) ->
     md = markdownIt(opts)
     md.use(require(plugName), plugOpts ? {}) for plugName, plugOpts of plugins
+    setupCustomPlugin(md)
     md
 
   @generateAfterRender: ($) ->
@@ -138,8 +248,8 @@ module.exports = class MdsMarkdown
     markdown = markdown.replace(/^\/[^-](.+$)/mg, "$1 {fragment}")
 
     # Now let's provide the fragment blocks with `/-` and `-/`.
-    markdown = markdown.replace(/^\/-/mg, "::: fragment\n")
-      .replace(/-\//mg, "\n:::")
+    #markdown = markdown.replace(/^\/-/mg, "::: fragment\n")
+      # .replace(/-\//mg, "\n:::")
 
     @_rulers          = []
     @_settings        = new MdsMdSetting
