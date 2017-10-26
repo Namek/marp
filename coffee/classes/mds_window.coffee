@@ -68,8 +68,8 @@ module.exports = class MdsWindow
         bw.setAlwaysOnTop(false)
 
         # debug only
-        setTimeout (() => MdsWindow.loadFromFile "D:/Dropbox/Talks/Elm Talk/elm-talk.md", bw.mdsWindow), 500
-        setTimeout (-> bw.mdsWindow.send 'openDevTool'), 500
+        #setTimeout (() => MdsWindow.loadFromFile "D:/Dropbox/Talks/Elm Talk/elm-talk.md", bw.mdsWindow), 500
+        #setTimeout (-> bw.mdsWindow.send 'openDevTool'), 500
 
       bw.maximize() if global.marp.config.get 'windowPosition.maximized'
 

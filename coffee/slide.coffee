@@ -143,7 +143,7 @@ document.addEventListener 'DOMContentLoaded', ->
 
     ipc.on 'render', (e, md) -> render(Markdown.parse(md))
     ipc.on 'currentPage', (e, page) -> applyCurrentPage page
-    ipc.on 'stepPresentation', (e, {currentPage, delta}) -> applyStepPresentation currentPage, delta
+    ipc.on 'stepFragmentInSlide', (e, {currentPage, delta}) -> applyStepFragmentInSlide currentPage, delta
     ipc.on 'setClass', (e, classes) -> $('body').attr 'class', classes
     ipc.on 'setImageDirectory', (e, dir) -> setImageDirectory(dir)
     ipc.on 'requestPdfOptions', (e, opts) -> sendPdfOptions(opts || {})

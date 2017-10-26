@@ -248,8 +248,8 @@ module.exports = class MdsMarkdown
     markdown = markdown.replace(/^\/[^-](.+$)/mg, "$1 {fragment}")
 
     # Now let's provide the fragment blocks with `/-` and `-/`.
-    #markdown = markdown.replace(/^\/-/mg, "::: fragment\n")
-      # .replace(/-\//mg, "\n:::")
+    markdown = markdown.replace(/^\/-/mg, "::: fragment\n")
+      .replace(/-\//mg, "\n:::")
 
     @_rulers          = []
     @_settings        = new MdsMdSetting
